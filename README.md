@@ -1,6 +1,6 @@
 # Cardano Learn & Hack
 
-This project is all about making Cardano easier to dive into! We've created a bunch of fun challenges and puzzles to help you explore the Cardano ecosystem in a gamified way.
+This project is all about making Cardano easier to dive into! We want to create a bunch of fun challenges and puzzles to help developers exploring the Cardano ecosystem in a gamified way.
 
 ## 🚀 Getting Started
 
