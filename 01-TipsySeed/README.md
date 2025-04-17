@@ -6,7 +6,7 @@
 
 It's late, and you're scrolling X when you stumble across this post:
 
-![a picture of someone in front of a fireplace with a glass of wine](./banner.jpg)
+<img src="./banner.jpg" alt="a picture of someone in front of a fireplace with a glass of wine" width="320"/>
 
 > "Sippin’ wine by the 🔥, crypto bags LOADED! Just me, my sofa, and millions in my ADA wallet! #ToTheMoon 🚀"
 
