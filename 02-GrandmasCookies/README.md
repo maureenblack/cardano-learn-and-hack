@@ -26,7 +26,7 @@ The last address in the trail leads to the thief’s secret hideout.
 Rumor has it they've already started baking.
 Luckily, I can still claim one cookie — but only if I provide the correct password.
 
-How to unlock the cookie:
+How to mint a cookie:
 The password is a combination of all the recipe ingredients (comma-separated),
 plus your public key hash — all hashed together with BLAKE2b-256.
 
