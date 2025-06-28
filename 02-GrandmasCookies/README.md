@@ -13,7 +13,7 @@ Both the note and the cookie were stolen from my wallet — only a few crumbs re
 Fortunately, the thief wasn’t careful. On their way out, they left a trail of crumbs behind.
 And if you look closely, you’ll notice pieces of the recipe scattered along the path...
 
-Here’s my wallet address: `addr_test1qql0z3455rys8mjz0cgw55q7yv9237wdwd0xrhhqtgtn0d6z8c6pjlel486z48xl5pd35uz26x3xngsn89c6czwwqqgqkntrzw`
+Here’s my wallet address: `addr_test1qzvt6dzdv5f3qxw4rt25nwf3z32rns7sp03f22g0qhfeu2yzsy6nyzcur6alufxtx0q0tu6pu6389t9xz4rskcprvkgs5enfwd`
 
 __Side note__: This is a real recipe — if you recover it, you’ll end up with some seriously tasty cookies!
 (Mix it all together and bake at 170°C for 10-12 minutes)
