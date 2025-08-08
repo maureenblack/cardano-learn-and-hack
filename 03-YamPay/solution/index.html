@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YamPay - Send ₳da to Your Local Farmer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(45deg, #ff6b6b, #feca57);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.2);
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            color: #f8fafc;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism header */
+        .header {
+            background: white;
+            border-radius: 15px;
+            color: #2c3e50;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin: 15px 0;
+            color: #fff;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
+
+        .header p {
+            font-size: 1.4em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Cards with glassmorphism */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .wallet-section {
+            padding: 40px;
+        }
+
+        .wallet-section h2 {
+            color: white;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .wallet-section p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .wallet-info {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 25px;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wallet-info.show {
+            display: block;
+        }
+
+        .wallet-info h3 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .wallet-info p {
+            margin-bottom: 10px;
+        }
+
+        /* Premium buttons */
+        .btn {
+            background: #7c3aed;
+            color: #f8fafc;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: none;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #6d28d9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Market section */
+        .market-section {
+            padding: 40px;
+            color: #f8fafc;
+        }
+
+        .market-section h2 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .market-section > p {
+            font-size: 1.1em;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Farmer info with enhanced styling */
+        .farmer-info {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            position: relative;
+            text-align: left;
+        }
+
+        .farmer-info::before {
+            content: '👩‍🌾';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8em;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .farmer-info h3 {
+            color: #f8fafc;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Enhanced yam grid */
+        .yam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .yam-card {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #334155;
+        }
+
+        .yam-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .yam-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .yam-card:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .yam-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .yam-emoji {
+            font-size: 4em;
+            margin: 10px 0 20px;
+            display: inline-block;
+            color: #7c3aed;
+        }
+
+        .yam-card:hover .yam-emoji {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .yam-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #f8fafc;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .yam-price {
+            font-size: 2em;
+            color: #feca57;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(254, 202, 87, 0.5);
+            display: inline-block;
+            animation: priceGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes priceGlow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.3); }
+        }
+
+        /* Enhanced address styling */
+        .address {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 0.85em;
+            border: 1px solid #334155;
+            background-color: #1e293b;
+            margin: 10px 0;
+        }
+
+        .address::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(254, 202, 87, 0.1), transparent);
+            animation: addressScan 3s ease-in-out infinite;
+        }
+
+        @keyframes addressScan {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: -100%; }
+        }
+
+        /* Enhanced status messages */
+        .status-message {
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: statusSlide 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes statusSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .warning {
+            background: #fff8e1;
+            color: #f57f17;
+            border: 1px solid #fff3e0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .wallet-section, .market-section {
+                padding: 30px 20px;
+            }
+            
+            .yam-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pulse effect for important elements */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #764ba2, #ff6b6b);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="banner">
+                <img src="../banner.png" alt="Fresh Yams from Local Farmers">
+            </div>
+            <div class="header-content">
+                <h1>YamPay</h1>
+                <p>Support Local Farmers with Cardano</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="wallet-section">
+                <h2>Connect Your Wallet</h2>
+                <p>Connect your Cardano testnet wallet to start buying delicious yams from local farmers!</p>
+                
+                <button id="connectBtn" class="btn pulse">
+                    Connect Wallet
+                </button>
+
+                <div id="walletInfo" class="wallet-info">
+                    <h3>Wallet Connected! 🎉</h3>
+                    <p><strong>Balance:</strong> <span id="balance" class="loading">⭮</span> ₳</p>
+                    <p><strong>Address:</strong></p>
+                    <div id="address" class="address">Loading...</div>
+                </div>
+
+                <div id="statusMessage"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="market-section">
+                <h2>Mama Adunni's Yam Market</h2>
+                <p>Fresh yams from our local farm, now accepting ₳da payments!</p>
+
+                <div class="farmer-info">
+                    <h3>👩‍🌾 Farmer's Wallet Address:</h3>
+                    <div class="address" id="farmerAddress">
+                        addr_test1qpw0djgj0x59ngrjvqthn7enhvruxnsavsw5th63la3mjel3tkc974sr23jmlzgq5zda4gtv8k9cy38756r9y3qgmkqqjz6aa7
+                    </div>
+                    <p style="margin-top: 15px; font-style: italic; opacity: 0.7;">
+                        This is a testnet address for demonstration purposes
+                    </p>
+                </div>
+
+                <div class="yam-grid">
+                    <div class="yam-card">
+                        <div class="yam-emoji">🍠</div>
+                        <div class="yam-name">White Yam</div>
+                        <div class="yam-price">3 ₳</div>
+                        <button class="btn buy-btn" data-yam="White Yam" data-price="3">
+                            Buy Now
+                        </button>
+                    </div>
+
+                    <div class="yam-card">
+                        <div class="yam-emoji">🍠</div>
+                        <div class="yam-name">Yellow Yam</div>
+                        <div class="yam-price">4 ₳</div>
+                        <button class="btn buy-btn" data-yam="Yellow Yam" data-price="4">
+                            Buy Now
+                        </button>
+                    </div>
+
+                    <div class="yam-card">
+                        <div class="yam-emoji">🍠</div>
+                        <div class="yam-name">Puna Yam</div>
+                        <div class="yam-price">5 ₳</div>
+                        <button class="btn buy-btn" data-yam="Puna Yam" data-price="5">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cardano = null;
+        let walletApi = null;
+        let isConnected = false;
+
+        // Farmer's testnet address
+        const FARMER_ADDRESS = "addr_test1qpw0djgj0x59ngrjvqthn7enhvruxnsavsw5th63la3mjel3tkc974sr23jmlzgq5zda4gtv8k9cy38756r9y3qgmkqqjz6aa7";
+
+        // DOM elements
+        const connectBtn = document.getElementById('connectBtn');
+        const walletInfo = document.getElementById('walletInfo');
+        const balanceEl = document.getElementById('balance');
+        const addressEl = document.getElementById('address');
+        const statusMessage = document.getElementById('statusMessage');
+        const buyButtons = document.querySelectorAll('.buy-btn');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            checkWalletAvailability();
+            setupEventListeners();
+        });
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function checkWalletAvailability() {
+            if (typeof window.cardano !== 'undefined') {
+                cardano = window.cardano;
+                showStatus('🎉 Cardano wallet detected! Click "Connect Wallet" to continue.', 'success');
+            } else {
+                showStatus('⚠️ No Cardano wallet detected. Please install Nami, Eternl, or another Cardano wallet.', 'error');
+                connectBtn.disabled = true;
+                connectBtn.textContent = 'No Wallet Found';
+            }
+        }
+
+        function setupEventListeners() {
+            connectBtn.addEventListener('click', connectWallet);
+            
+            buyButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const yamName = this.dataset.yam;
+                    const price = this.dataset.price;
+                    buyYam(yamName, price);
+                });
+                btn.disabled = true;
+            });
+        }
+
+        async function connectWallet() {
+            try {
+                if (!cardano) {
+                    throw new Error('No Cardano wallet found');
+                }
+
+                connectBtn.innerHTML = '<span class="loading">⭮</span> Connecting...';
+                connectBtn.disabled = true;
+
+                let walletName = null;
+                if (cardano.nami) {
+                    walletApi = await cardano.nami.enable();
+                    walletName = 'Nami';
+                } else if (cardano.eternl) {
+                    walletApi = await cardano.eternl.enable();
+                    walletName = 'Eternl';
+                } else {
+                    throw new Error('No supported wallet found');
+                }
+
+                isConnected = true;
+                connectBtn.innerHTML = `✅ Connected to ${walletName}`;
+                connectBtn.classList.remove('pulse');
+
+                await loadWalletInfo();
+                enableBuyButtons();
+                
+                showStatus(`🚀 Successfully connected to ${walletName}! Ready to buy some yams!`, 'success');
+
+            } catch (error) {
+                console.error('Connection error:', error);
+                connectBtn.innerHTML = 'Connect Wallet';
+                connectBtn.disabled = false;
+                connectBtn.classList.add('pulse');
+                showStatus(`❌ Failed to connect wallet: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadWalletInfo() {
+            try {
+                const balanceValue = await walletApi.getBalance();
+                const balance = parseInt(balanceValue) / 1000000;
+                balanceEl.innerHTML = balance.toFixed(2);
+                balanceEl.classList.remove('loading');
+
+                const addresses = await walletApi.getUsedAddresses();
+                if (addresses.length > 0) {
+                    addressEl.textContent = addresses[0].substring(0, 30) + '...';
+                } else {
+                    addressEl.textContent = 'No addresses found';
+                }
+
+                walletInfo.classList.add('show');
+
+            } catch (error) {
+                console.error('Error loading wallet info:', error);
+                showStatus('💔 Error loading wallet information', 'error');
+            }
+        }
+
+        function enableBuyButtons() {
+            buyButtons.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.add('pulse');
+            });
+        }
+
+        async function buyYam(yamName, price) {
+            if (!isConnected) {
+                showStatus('🔗 Please connect your wallet first!', 'warning');
+                return;
+            }
+
+            const buyButton = event.target;
+            const originalText = buyButton.innerHTML;
+
+            try {
+                buyButton.innerHTML = '<span class="loading">⭮</span> Processing...';
+                buyButton.disabled = true;
+                buyButton.classList.remove('pulse');
+
+                showStatus(`🛒 Preparing to buy ${yamName} for ${price} ₳...`, 'warning');
+
+                await simulateTransaction(yamName, price);
+
+            } catch (error) {
+                console.error('Transaction error:', error);
+                showStatus(`💥 Transaction failed: ${error.message}`, 'error');
+            } finally {
+                buyButton.innerHTML = originalText;
+                buyButton.disabled = false;
+                buyButton.classList.add('pulse');
+            }
+        }
+
+        async function simulateTransaction(yamName, price) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            const txHash = 'demo_tx_' + Math.random().toString(36).substring(7);
+            
+            showStatus(
+                `🎉✨ SUCCESS! You bought ${yamName} for ${price} ₳! 
+                <br>📄 Transaction ID: <span style="font-family: monospace; color: #feca57;">${txHash}</span>
+                <br>🙏 Thank you for supporting local farmers! Your yam will be delivered fresh!`, 
+                'success'
+            );
+
+            // Add some celebration effects
+            createConfetti();
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#feca57', '#667eea', '#764ba2'];
+            const confettiContainer = document.body;
+
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '9999';
+                confetti.style.borderRadius = '50%';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.animation = `confettiFall ${Math.random() * 2 + 3}s linear forwards`;
+                
+                confettiContainer.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        function showStatus(message, type) {
+            statusMessage.innerHTML = message;
+            statusMessage.className = `status-message ${type}`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.innerHTML = '';
+                    statusMessage.className = '';
+                }, 15000);
+            }
+        }
+
+        // Handle wallet disconnection
+        window.addEventListener('beforeunload', function() {
+            if (walletApi && walletApi.disconnect) {
+                walletApi.disconnect();
+            }
+        });
+
+        // Add confetti animation styles dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes confettiFall {
+                0% {
+                    transform: translateY(-100px) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(${window.innerHeight + 100}px) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

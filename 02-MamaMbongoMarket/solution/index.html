@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mama Mbongo's Micro-Loan DeFi Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .wallet-section {
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+
+        .wallet-info {
+            display: none;
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .wallet-info.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .btn.success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+
+        .pool-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ecf0f1;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .loan-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .loan-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .loan-item.overdue {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .loan-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .loan-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .loan-status.active {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .loan-status.overdue {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .address {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 Mama Mbongo's Micro-Loan DeFi Market</h1>
+            <p>Empowering African entrepreneurs through blockchain lending</p>
+        </div>
+
+        <div class="wallet-section section">
+            <h2>Connect Your Wallet</h2>
+            <p>Connect your Cardano testnet wallet to participate in our micro-lending platform.</p>
+            
+            <button id="connectBtn" class="btn">
+                Connect Wallet
+            </button>
+
+            <div id="walletInfo" class="wallet-info">
+                <h3>Wallet Connected! 🎉</h3>
+                <p><strong>Balance:</strong> <span id="balance">Loading...</span> ₳</p>
+                <p><strong>Address:</strong></p>
+                <div id="address" class="address">Loading...</div>
+            </div>
+
+            <div id="statusMessage"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>💰 Lending Pool</h2>
+                
+                <div class="pool-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPool">0</div>
+                        <div class="stat-label">Total Pool (₳)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="availableFunds">0</div>
+                        <div class="stat-label">Available (₳)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeLoans">0</div>
+                        <div class="stat-label">Active Loans</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5%</div>
+                        <div class="stat-label">Interest Rate</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="depositAmount">Deposit Amount (₳)</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount to deposit" min="1" step="0.1">
+                </div>
+
+                <button id="depositBtn" class="btn" disabled>
+                    Deposit to Pool
+                </button>
+
+                <div class="form-group" style="margin-top: 25px;">
+                    <label for="withdrawAmount">Withdraw Amount (₳)</label>
+                    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw" min="1" step="0.1">
+                </div>
+
+                <button id="withdrawBtn" class="btn danger" disabled>
+                    Withdraw from Pool
+                </button>
+            </div>
+
+            <div class="section">
+                <h2>🏦 Loan Management</h2>
+                
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount (₳)</label>
+                    <input type="number" id="loanAmount" placeholder="Enter loan amount" min="1" max="50" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="loanPurpose">Loan Purpose</label>
+                    <select id="loanPurpose">
+                        <option value="">Select purpose</option>
+                        <option value="inventory">Inventory Purchase</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="expansion">Business Expansion</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="loanDuration">Loan Duration</label>
+                    <select id="loanDuration">
+                        <option value="30">30 days</option>
+                        <option value="60">60 days</option>
+                        <option value="90">90 days</option>
+                    </select>
+                </div>
+
+                <button id="requestLoanBtn" class="btn" disabled>
+                    Request Loan
+                </button>
+
+                <div style="margin-top: 25px;">
+                    <h3>Your Active Loans</h3>
+                    <div id="loanList" class="loan-list">
+                        <p style="text-align: center; color: #7f8c8d; padding: 20px;">
+                            No active loans. Connect your wallet to view loans.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let cardano = null;
+        let walletApi = null;
+        let isConnected = false;
+        let userAddress = null;
+
+        // Mock data for demonstration
+        let poolData = {
+            totalPool: 1000,
+            availableFunds: 750,
+            activeLoans: 5
+        };
+
+        let userLoans = [];
+        let userDeposits = 0;
+
+        // DOM elements
+        const connectBtn = document.getElementById('connectBtn');
+        const walletInfo = document.getElementById('walletInfo');
+        const balanceEl = document.getElementById('balance');
+        const addressEl = document.getElementById('address');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Pool elements
+        const depositAmountEl = document.getElementById('depositAmount');
+        const withdrawAmountEl = document.getElementById('withdrawAmount');
+        const depositBtn = document.getElementById('depositBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+
+        // Loan elements
+        const loanAmountEl = document.getElementById('loanAmount');
+        const loanPurposeEl = document.getElementById('loanPurpose');
+        const loanDurationEl = document.getElementById('loanDuration');
+        const requestLoanBtn = document.getElementById('requestLoanBtn');
+        const loanListEl = document.getElementById('loanList');
+
+        // Stats elements
+        const totalPoolEl = document.getElementById('totalPool');
+        const availableFundsEl = document.getElementById('availableFunds');
+        const activeLoansEl = document.getElementById('activeLoans');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkWalletAvailability();
+            setupEventListeners();
+            updatePoolStats();
+        });
+
+        function checkWalletAvailability() {
+            if (typeof window.cardano !== 'undefined') {
+                cardano = window.cardano;
+                showStatus('Cardano wallet detected! Click "Connect Wallet" to continue.', 'success');
+            } else {
+                showStatus('No Cardano wallet detected. Please install Nami, Eternl, or another Cardano wallet.', 'error');
+                connectBtn.disabled = true;
+            }
+        }
+
+        function setupEventListeners() {
+            connectBtn.addEventListener('click', connectWallet);
+            depositBtn.addEventListener('click', depositToPool);
+            withdrawBtn.addEventListener('click', withdrawFromPool);
+            requestLoanBtn.addEventListener('click', requestLoan);
+        }
+
+        async function connectWallet() {
+            try {
+                if (!cardano) {
+                    throw new Error('No Cardano wallet found');
+                }
+
+                let walletName = null;
+                if (cardano.nami) {
+                    walletApi = await cardano.nami.enable();
+                    walletName = 'Nami';
+                } else if (cardano.eternl) {
+                    walletApi = await cardano.eternl.enable();
+                    walletName = 'Eternl';
+                } else {
+                    throw new Error('No supported wallet found');
+                }
+
+                isConnected = true;
+                connectBtn.textContent = `Connected to ${walletName}`;
+                connectBtn.disabled = true;
+
+                await loadWalletInfo();
+                enableButtons();
+                loadUserLoans();
+                
+                showStatus(`Successfully connected to ${walletName}!`, 'success');
+
+            } catch (error) {
+                console.error('Connection error:', error);
+                showStatus(`Failed to connect wallet: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadWalletInfo() {
+            try {
+                const balanceValue = await walletApi.getBalance();
+                const balance = parseInt(balanceValue) / 1000000;
+                balanceEl.textContent = balance.toFixed(2);
+
+                const addresses = await walletApi.getUsedAddresses();
+                if (addresses.length > 0) {
+                    userAddress = addresses[0];
+                    addressEl.textContent = addresses[0].substring(0, 20) + '...';
+                } else {
+                    addressEl.textContent = 'No addresses found';
+                }
+
+                walletInfo.classList.add('show');
+
+            } catch (error) {
+                console.error('Error loading wallet info:', error);
+                showStatus('Error loading wallet information', 'error');
+            }
+        }
+
+        function enableButtons() {
+            depositBtn.disabled = false;
+            withdrawBtn.disabled = false;
+            requestLoanBtn.disabled = false;
+        }
+
+        async function depositToPool() {
+            const amount = parseFloat(depositAmountEl.value);
+            
+            if (!amount || amount <= 0) {
+                showStatus('Please enter a valid deposit amount', 'warning');
+                return;
+            }
+
+            try {
+                showStatus(`Processing deposit of ${amount} ₳...`, 'warning');
+                
+                // Simulate transaction
+                await simulateTransaction();
+                
+                // Update pool data
+                poolData.totalPool += amount;
+                poolData.availableFunds += amount;
+                userDeposits += amount;
+                
+                updatePoolStats();
+                depositAmountEl.value = '';
+                
+                showStatus(`Successfully deposited ${amount} ₳ to the lending pool!`, 'success');
+
+            } catch (error) {
+                showStatus(`Deposit failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function withdrawFromPool() {
+            const amount = parseFloat(withdrawAmountEl.value);
+            
+            if (!amount || amount <= 0) {
+                showStatus('Please enter a valid withdrawal amount', 'warning');
+                return;
+            }
+
+            if (amount > userDeposits) {
+                showStatus('Insufficient deposits to withdraw this amount', 'error');
+                return;
+            }
+
+            try {
+                showStatus(`Processing withdrawal of ${amount} ₳...`, 'warning');
+                
+                await simulateTransaction();
+                
+                poolData.totalPool -= amount;
+                poolData.availableFunds -= amount;
+                userDeposits -= amount;
+                
+                updatePoolStats();
+                withdrawAmountEl.value = '';
+                
+                showStatus(`Successfully withdrew ${amount} ₳ from the lending pool!`, 'success');
+
+            } catch (error) {
+                showStatus(`Withdrawal failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function requestLoan() {
+            const amount = parseFloat(loanAmountEl.value);
+            const purpose = loanPurposeEl.value;
+            const duration = parseInt(loanDurationEl.value);
+            
+            if (!amount || amount <= 0) {
+                showStatus('Please enter a valid loan amount', 'warning');
+                return;
+            }
+
+            if (!purpose) {
+                showStatus('Please select a loan purpose', 'warning');
+                return;
+            }
+
+            if (amount > poolData.availableFunds) {
+                showStatus('Insufficient funds in the pool for this loan amount', 'error');
+                return;
+            }
+
+            try {
+                showStatus(`Processing loan request for ${amount} ₳...`, 'warning');
+                
+                await simulateTransaction();
+                
+                // Create new loan
+                const loan = {
+                    id: Date.now(),
+                    amount: amount,
+                    purpose: purpose,
+                    duration: duration,
+                    startDate: new Date(),
+                    dueDate: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    interestRate: 5,
+                    totalRepayment: amount * 1.05,
+                    status: 'active'
+                };
+
+                userLoans.push(loan);
+                poolData.availableFunds -= amount;
+                poolData.activeLoans += 1;
+                
+                updatePoolStats();
+                updateLoanList();
+                clearLoanForm();
+                
+                showStatus(`Loan approved! ${amount} ₳ has been transferred to your wallet.`, 'success');
+
+            } catch (error) {
+                showStatus(`Loan request failed: ${error.message}`, 'error');
+            }
+        }
+
+        function updatePoolStats() {
+            totalPoolEl.textContent = poolData.totalPool.toFixed(0);
+            availableFundsEl.textContent = poolData.availableFunds.toFixed(0);
+            activeLoansEl.textContent = poolData.activeLoans;
+        }
+
+        function loadUserLoans() {
+            // Simulate some existing loans for demo
+            if (userLoans.length === 0) {
+                userLoans = [
+                    {
+                        id: 1,
+                        amount: 25,
+                        purpose: 'inventory',
+                        duration: 30,
+                        startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+                        dueDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+                        interestRate: 5,
+                        totalRepayment: 26.25,
+                        status: 'active'
+                    }
+                ];
+            }
+            updateLoanList();
+        }
+
+        function updateLoanList() {
+            if (userLoans.length === 0) {
+                loanListEl.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">No active loans.</p>';
+                return;
+            }
+
+            const loansHtml = userLoans.map(loan => {
+                const daysLeft = Math.ceil((loan.dueDate - new Date()) / (1000 * 60 * 60 * 24));
+                const isOverdue = daysLeft < 0;
+                
+                return `
+                    <div class="loan-item ${isOverdue ? 'overdue' : ''}">
+                        <div class="loan-header">
+                            <div class="loan-amount">${loan.amount} ₳</div>
+                            <div class="loan-status ${isOverdue ? 'overdue' : 'active'}">
+                                ${isOverdue ? 'OVERDUE' : 'ACTIVE'}
+                            </div>
+                        </div>
+                        <p><strong>Purpose:</strong> ${loan.purpose}</p>
+                        <p><strong>Due:</strong> ${loan.dueDate.toLocaleDateString()} (${Math.abs(daysLeft)} days ${isOverdue ? 'overdue' : 'left'})</p>
+                        <p><strong>Repayment:</strong> ${loan.totalRepayment.toFixed(2)} ₳</p>
+                        <button class="btn success" style="margin-top: 10px; width: auto; padding: 8px 15px;" 
+                                onclick="repayLoan(${loan.id})">
+                            Repay Loan
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            loanListEl.innerHTML = loansHtml;
+        }
+
+        async function repayLoan(loanId) {
+            const loan = userLoans.find(l => l.id === loanId);
+            if (!loan) return;
+
+            try {
+                showStatus(`Processing repayment of ${loan.totalRepayment.toFixed(2)} ₳...`, 'warning');
+                
+                await simulateTransaction();
+                
+                // Remove loan and update pool
+                userLoans = userLoans.filter(l => l.id !== loanId);
+                poolData.availableFunds += loan.totalRepayment;
+                poolData.activeLoans -= 1;
+                
+                updatePoolStats();
+                updateLoanList();
+                
+                showStatus(`Loan successfully repaid! Thank you for your business.`, 'success');
+
+            } catch (error) {
+                showStatus(`Repayment failed: ${error.message}`, 'error');
+            }
+        }
+
+        function clearLoanForm() {
+            loanAmountEl.value = '';
+            loanPurposeEl.value = '';
+            loanDurationEl.value = '30';
+        }
+
+        async function simulateTransaction() {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Randomly simulate success/failure for demo
+            if (Math.random() < 0.95) {
+                return Promise.resolve();
+            } else {
+                throw new Error('Network error - please try again');
+            }
+        }
+
+        function showStatus(message, type) {
+            statusMessage.innerHTML = message;
+            statusMessage.className = `status-message ${type}`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.innerHTML = '';
+                    statusMessage.className = '';
+                }, 8000);
+            }
+        }
+
+        // Make repayLoan globally accessible
+        window.repayLoan = repayLoan;
+    </script>
+</body>
+</html>
